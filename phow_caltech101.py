@@ -270,7 +270,7 @@ def trainVocab(selTrain, all_images, conf):
             im = imread(all_images[i])
             descrs.append(getPhowFeatures(im, conf.phowOpts)[1])
             # the '[1]' is there because we only want the descriptors and not the frames
-    print(str(datetime.now()) + '|Now getting visual words via k-means clustering, goes until convergence')
+    print(str(datetime.now()) + '| Now getting visual words via k-means clustering, goes until convergence')
     descrs = hstack(descrs)
     n_features = descrs.shape[1]
     sample_indices = sample(arange(n_features), conf.numbers_of_features_for_histogram)
