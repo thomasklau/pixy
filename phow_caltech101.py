@@ -263,7 +263,7 @@ def trainVocab(selTrain, all_images, conf):
     if MULTIPROCESSING:
         num_cores = multiprocessing.cpu_count()
 
-        descrs = Parallel(n_jobs=num_cores)(delayed(getFeatures)(i, all_images, conf) for i in selTrainFeats)
+        descrs = Parallel(n_jobs=num_cores, verbose=1)(delayed(getFeatures)(i, all_images, conf) for i in selTrainFeats)
         # the '[1]' is there because we only want the descriptors and not the frames
     else:
         for i in selTrainFeats:
@@ -287,15 +287,12 @@ def trainVocab(selTrain, all_images, conf):
 
 def computeHistograms(all_images, model, conf, vocab):
     hists = []
-    pbar = ProgressBar(widgets=[Percentage(), Bar()], max_value=len(all_images)).start()
 
-    for ii, imagefname in enumerate(all_images):
-        pbar.update(ii)
-        im = imread(imagefname)
-        hists_temp = getImageDescriptor(model, im, conf, vocab)
-        hists.append(hists_temp)
+    num_cores = multiprocessing.cpu_count()
+
+    hists = Parallel(n_jobs=8, verbose=7)(delayed(getImageDescriptor)(model, imread(imagefname), conf, vocab) for ii, imagefname in enumerate(all_images))
+
     hists = vstack(hists)
-    pbar.finish()
     return hists
 
 
